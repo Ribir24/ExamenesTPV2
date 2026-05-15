@@ -8,20 +8,68 @@ class MyVector {
 public:
 
 	MyVector(int size) :
-			_size(size) {
+		_size(size) {
 		_elem = new T[size];
 	}
 
 	virtual ~MyVector() {
-		/*
+		
 		// el código está en comentario porque puede causar errores sin
-		// la implemntación correcta de los constructores/operatores de 
+		// la implemntación correcta de los constructores/operatores de
 		// copia/movimiento correctos
 		//
 		delete[] _elem;
 		_elem = nullptr;
 		_size = 0;
-		*/
+		
+	}
+
+	MyVector(const MyVector& other) : _size(other._size)
+	{
+		_elem = new T[_size];
+
+		for (std::size_t i = 0; i < _size; i++) {
+			_elem[i] = other._elem[i];
+		}
+	}
+	//CONSTRUCTOR POR COPIA
+
+	MyVector(MyVector&& other): _elem(other._elem), _size(other._size)
+	{
+		other._elem = nullptr;
+		other._size = 0;
+	}
+	//CONSTRUCTOR POR MOVIMIENTO
+
+	MyVector& operator=(const MyVector& other)
+	{
+		if (this == &other) return *this;
+
+		delete[] _elem;
+
+		_size = other._size;
+		_elem = new T[_size];
+
+		for (std::size_t i = 0; i < _size; ++i) {
+			_elem[i] = other._elem[i];
+		}
+
+		return *this;
+	} 
+
+	MyVector& operator=(MyVector&& other)
+	{
+		if (this == &other) return *this;
+
+		delete[] _elem;
+
+		_elem = other._elem;
+		_size = other._size;
+
+		other._elem = nullptr;
+		other._size = 0;
+
+		return *this;
 	}
 
 	std::size_t size() {
