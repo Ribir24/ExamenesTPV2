@@ -6,7 +6,7 @@
 
 int GameObject::_count = 0;
 
-GameObject::GameObject(Resource *r) :
+GameObject::GameObject(std::shared_ptr < Resource> r) :
 		_alive(true), _r(r), _x(), _y() {
 
 	_count++;
@@ -30,10 +30,10 @@ void GameObject::update() {
 		unsigned int n = _r->action() % 10;
 		if (n < 3) {
 			// Añadir una entidad que con un recuso nuevo
-			Game::Instance()->add(new GameObject(new Resource()));
+			Game::Instance()->add(std::make_unique<GameObject>(std::make_shared<Resource>()));
 		} else if (n < 5) {
 			// Añadir una entidad que comparte el recurso
-			Game::Instance()->add(new GameObject(_r));
+			Game::Instance()->add(std::make_unique<GameObject>(_r));
 		}
 	}
 }

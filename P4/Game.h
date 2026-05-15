@@ -14,7 +14,7 @@ class Game: public Singleton<Game> {
 
 public:
 	void start(unsigned int);
-	void add(GameObject *e);
+	void add(std::unique_ptr<GameObject> e);
 
 private:
 
@@ -24,7 +24,7 @@ private:
 	bool init();
 	void refresh();
 
-	std::vector<GameObject*> _v;
+	std::vector<std::unique_ptr<GameObject>> _v;
 };
 
 

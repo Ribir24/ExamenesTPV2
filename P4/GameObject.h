@@ -7,7 +7,7 @@
 class GameObject {
 
 public:
-	GameObject(Resource *r);
+	GameObject(std::shared_ptr <Resource> r);
 	virtual ~GameObject();
 	void update();
 	bool isAlive();
@@ -16,8 +16,8 @@ public:
 
 private:
 	bool _alive;
-	Resource *_r;
 
+	std::shared_ptr<Resource> _r;
 	unsigned int _x;
 	unsigned int _y;
 };

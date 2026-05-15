@@ -7,15 +7,11 @@
 Game::Game() {
 }
 
-Game::~Game() {
-	for (GameObject *o : _v) {
-		delete o;
-	}
-}
+Game::~Game() = default;
 
 bool Game::init() {
 	for (int i = 0; i < 10; i++) {
-		add(new GameObject(new Resource()));
+		add(std::make_unique<GameObject>(std::make_shared<Resource>()));
 	}
 	return true;
 }
@@ -41,24 +37,19 @@ void Game::start(unsigned int n) {
 		// borrar las entidades muertas
 		refresh();
 		n--;
-	}
+	} 
+	_v.clear();
 }
 
 void Game::refresh() {
 	
 	// borrar entidades muertas
-	_v.erase(std::remove_if(_v.begin(), _v.end(), [](GameObject* a) {
-		if (!a->isAlive()) {
-			delete a;
-			return true;
-		}
-		else {
-			return false;
-		}
+	_v.erase(std::remove_if(_v.begin(), _v.end(), [](const std::unique_ptr<GameObject>& a) {
+		return !a->isAlive();
 		}), _v.end());
 
 }
 
-void Game::add(GameObject *e) {
-	_v.push_back(e);
+void Game::add(std::unique_ptr<GameObject> e) {
+	_v.push_back(std::move(e));
 }
