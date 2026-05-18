@@ -4,49 +4,77 @@
 #include <cassert>
 #include <cstddef>
 #include <vector>
-// This file is part of the course TPV2@UCM - Samir Genaim
-
-#pragma once
 
 template<typename T>
 class ObjectPool {
 public:
 
+	using iterator = T*;
+
 	ObjectPool(std::size_t size):
-		pool_(new T[size]),
+	_pool(new T[size]),
 		_size(size),
 		_used(size, false),
-		_lastUsed(size-1)
+		_lastUsed(size - 1)
 	{
 	}
 
 	virtual ~ObjectPool() {
-		delete[] pool_;
+		delete[] _pool;
 	}
 
 	T* alloc() {
 		auto i = (_lastUsed + 1) % _size;
+		while (_used[i] && i != _lastUsed)
+			i = (i + 1) % _size;
 
-		while (_used[i] && i != _lastUsed) i = (i + 1) % _size;
-		
 		if (!_used[i]) {
-			_lastUsed = i;
 			_used[i] = true;
-			return pool_ + i;
+			return _pool + i;
 		}
-		else return nullptr;
+		else {
+			return nullptr;
+		}
 	}
 
-	void free(T* p) {
-		auto idx = p - pool_;
+	void free(T *p) {
+		auto idx = p - _pool;
 		assert(idx >= 0 && idx < _size);
 		_used[idx] = false;
 	}
 
+	iterator begin() {
+		return iterator{ _pool };
+	}
+
+	iterator end() {
+		return iterator{ _pool + _size};
+	}
+
 private:
-	T* pool_;
+	T* _pool;
 	std::size_t _size;
 	std::vector<bool> _used;
 	std::size_t _lastUsed;
 };
+
+struct Ent {
+};
+
+// ejemplo de uso
+void main_q2() {
+	ObjectPool<Ent> ent_pool(20);
+
+	for (Ent &e : ent_pool) {
+		e = Ent{};
+	}
+
+	std::vector<Ent*> v;
+
+	for (int i = 0; i < 10; i++)
+		v.push_back(ent_pool.alloc());
+	
+	for (Ent *e : v)
+		ent_pool.free(e);
+}
 
